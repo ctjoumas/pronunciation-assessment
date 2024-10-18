@@ -17,9 +17,15 @@ def pronunciation_assessment_continuous_from_file():
     # provide a WAV file as an example. Replace it with your own.
     audio_config = speechsdk.audio.AudioConfig(filename="samples_python_console_pronunciation_assessment_fall.wav")
 
-    reference_text = "your reference text"
+    # reference text is optional and is only used if you run a scripted assessment, which will compare the speech against
+    # the reference text. If teachers will have a known passage/text the students will read, we can use this which will
+    # then include the completeness score below. If we are not using the scripted assessment, we will not be calculating
+    # the completeness score (see below)
+    reference_text = ""
     # create pronunciation assessment config, set grading system, granularity and if enable miscue based on your requirement.
-    enable_miscue = True
+    # CT: It looks like enabling miscue will use the reference text, so if we are not using a scripted assessment, this will be false
+    #enable_miscue = True
+    enable_miscue = False
     enable_prosody_assessment = True
     pronunciation_config = speechsdk.PronunciationAssessmentConfig(
         reference_text=reference_text,
@@ -50,9 +56,15 @@ def pronunciation_assessment_continuous_from_file():
     def recognized(evt: speechsdk.SpeechRecognitionEventArgs):
         print('pronunciation assessment for: {}'.format(evt.result.text))
         pronunciation_result = speechsdk.PronunciationAssessmentResult(evt.result)
-        print('    Accuracy score: {}, pronunciation score: {}, completeness score : {}, fluency score: {}, prosody score: {}'.format(
+        # Commenting out to remove the completeness score since we are not using a scripted assessment. If we want to choose between the
+        # two, we can introduce logic to print this correctly
+        #print('    Accuracy score: {}, pronunciation score: {}, completeness score : {}, fluency score: {}, prosody score: {}'.format(
+        #    pronunciation_result.accuracy_score, pronunciation_result.pronunciation_score,
+        #    pronunciation_result.completeness_score, pronunciation_result.fluency_score, pronunciation_result.prosody_score
+        #))
+        print('    Accuracy score: {}, pronunciation score: {}, fluency score: {}, prosody score: {}'.format(
             pronunciation_result.accuracy_score, pronunciation_result.pronunciation_score,
-            pronunciation_result.completeness_score, pronunciation_result.fluency_score, pronunciation_result.prosody_score
+            pronunciation_result.fluency_score, pronunciation_result.prosody_score
         ))
         
         nonlocal recognized_words, fluency_scores, durations, prosody_scores
@@ -124,15 +136,21 @@ def pronunciation_assessment_continuous_from_file():
     fluency_score = sum([x * y for (x, y) in zip(fluency_scores, durations)]) / sum(durations)
 
     # Calculate whole completeness score
-    completeness_score = len([w for w in recognized_words if w.error_type == "None"]) / len(reference_words) * 100
-    completeness_score = completeness_score if completeness_score <= 100 else 100
+    # Commenting out for now since we are not using a scripted assessment
+    #completeness_score = len([w for w in recognized_words if w.error_type == "None"]) / len(reference_words) * 100
+    #completeness_score = completeness_score if completeness_score <= 100 else 100
 
-    # Re-calculate prosody score
+    # Re-calculate prosody score. Commenting out completeness score since we are not using a scripted assessment
     prosody_score = sum(prosody_scores) / len(prosody_scores)
-    pron_score = accuracy_score * 0.4 + prosody_score * 0.2 + fluency_score * 0.2 + completeness_score * 0.2
+    pron_score = accuracy_score * 0.4 + prosody_score * 0.2 + fluency_score * 0.2 #+ completeness_score * 0.2
 
-    print('    Paragraph pronunciation score: {}, accuracy score: {}, completeness score: {}, fluency score: {}, prosody score: {}'.format(
-        pron_score, accuracy_score, completeness_score, fluency_score, prosody_score
+    # Commenting out to remove the completeness score since we are not using a scripted assessment. If we want to choose between the
+    # two, we can introduce logic to print this correctly
+    #print('    Paragraph pronunciation score: {}, accuracy score: {}, completeness score: {}, fluency score: {}, prosody score: {}'.format(
+    #    pron_score, accuracy_score, completeness_score, fluency_score, prosody_score
+    #))
+    print('    Paragraph pronunciation score: {}, accuracy score: {}, fluency score: {}, prosody score: {}'.format(
+        pron_score, accuracy_score, fluency_score, prosody_score
     ))
 
     for idx, word in enumerate(final_words):
