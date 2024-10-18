@@ -141,8 +141,12 @@ def pronunciation_assessment_continuous_from_file():
     #completeness_score = completeness_score if completeness_score <= 100 else 100
 
     # Re-calculate prosody score. Commenting out completeness score since we are not using a scripted assessment
+    # https://learn.microsoft.com/en-us/azure/ai-services/speech-service/how-to-pronunciation-assessment?pivots=programming-language-csharp#pronunciation-score-calculation
     prosody_score = sum(prosody_scores) / len(prosody_scores)
-    pron_score = accuracy_score * 0.4 + prosody_score * 0.2 + fluency_score * 0.2 #+ completeness_score * 0.2
+    # this calculation is for scripted assessment
+    #pron_score = accuracy_score * 0.4 + prosody_score * 0.2 + fluency_score * 0.2 + completeness_score * 0.2
+    # this calculation is for unscripted assessment
+    pron_score = accuracy_score * 0.6 + prosody_score * 0.2 + fluency_score * 0.2
 
     # Commenting out to remove the completeness score since we are not using a scripted assessment. If we want to choose between the
     # two, we can introduce logic to print this correctly
