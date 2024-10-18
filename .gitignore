@@ -133,4 +133,4 @@ __blobstorage__
 __queuestorage__
 __azurite_db*__.json
 .python_packages
-samples_python_console_pronunciation_assessment_fall.wav
+*.wav
