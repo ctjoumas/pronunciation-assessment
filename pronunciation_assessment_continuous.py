@@ -158,4 +158,4 @@ def pronunciation_assessment_continuous_from_file():
             idx + 1, word.word, word.accuracy_score, word.error_type
         ))
 
-pronunciation_assessment_continuous_from_file()
+#pronunciation_assessment_continuous_from_file()
