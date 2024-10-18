@@ -154,7 +154,7 @@ def pronunciation_assessment_continuous_from_file():
     ))
 
     for idx, word in enumerate(final_words):
-        print('    {}: word: {}\taccuracy score: {}\terror type: {};'.format(
+        print('    {}: word: {}\t\taccuracy score: {}\terror type: {};'.format(
             idx + 1, word.word, word.accuracy_score, word.error_type
         ))
 
