@@ -77,7 +77,7 @@ def pronunciation_assessment_continuous_from_file(file_name = str, reference_tex
     # Start continuous pronunciation assessment
     speech_recognizer.start_continuous_recognition()
     while not done:
-        time.sleep(5)
+        time.sleep(.5)
 
     speech_recognizer.stop_continuous_recognition()
 
