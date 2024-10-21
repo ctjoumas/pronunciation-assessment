@@ -4,28 +4,24 @@ import string
 import time
 import azure.cognitiveservices.speech as speechsdk
 import os
+import difflib
+import json
  
-def pronunciation_assessment_continuous_from_file():
+def pronunciation_assessment_continuous_from_file(file_name = str, reference_text = str):
     """Performs continuous pronunciation assessment asynchronously with input from an audio file.
         See more information at https://aka.ms/csspeech/pa"""
 
-    # Creates an instance of a speech config with specified subscription key and service region.
     ai_service_region = os.environ.get('AI_SERVICE_REGION')
     ai_service_key = os.environ.get('AI_SERVICE_KEY')
+
+    # Creates an instance of a speech config with specified subscription key and service region.
+    # Replace with your own subscription key and service region (e.g., "westus").
     speech_config = speechsdk.SpeechConfig(subscription=ai_service_key, region=ai_service_region)
-
     # provide a WAV file as an example. Replace it with your own.
-    audio_config = speechsdk.audio.AudioConfig(filename="samples_python_console_pronunciation_assessment_fall.wav")
+    audio_config = speechsdk.audio.AudioConfig(filename=file_name)
 
-    # reference text is optional and is only used if you run a scripted assessment, which will compare the speech against
-    # the reference text. If teachers will have a known passage/text the students will read, we can use this which will
-    # then include the completeness score below. If we are not using the scripted assessment, we will not be calculating
-    # the completeness score (see below)
-    reference_text = ""
     # create pronunciation assessment config, set grading system, granularity and if enable miscue based on your requirement.
-    # CT: It looks like enabling miscue will use the reference text, so if we are not using a scripted assessment, this will be false
-    #enable_miscue = True
-    enable_miscue = False
+    enable_miscue = True
     enable_prosody_assessment = True
     pronunciation_config = speechsdk.PronunciationAssessmentConfig(
         reference_text=reference_text,
@@ -56,17 +52,10 @@ def pronunciation_assessment_continuous_from_file():
     def recognized(evt: speechsdk.SpeechRecognitionEventArgs):
         print('pronunciation assessment for: {}'.format(evt.result.text))
         pronunciation_result = speechsdk.PronunciationAssessmentResult(evt.result)
-        # Commenting out to remove the completeness score since we are not using a scripted assessment. If we want to choose between the
-        # two, we can introduce logic to print this correctly
-        #print('    Accuracy score: {}, pronunciation score: {}, completeness score : {}, fluency score: {}, prosody score: {}'.format(
-        #    pronunciation_result.accuracy_score, pronunciation_result.pronunciation_score,
-        #    pronunciation_result.completeness_score, pronunciation_result.fluency_score, pronunciation_result.prosody_score
-        #))
-        print('    Accuracy score: {}, pronunciation score: {}, fluency score: {}, prosody score: {}'.format(
+        print('    Accuracy score: {}, pronunciation score: {}, completeness score : {}, fluency score: {}, prosody score: {}'.format(
             pronunciation_result.accuracy_score, pronunciation_result.pronunciation_score,
-            pronunciation_result.fluency_score, pronunciation_result.prosody_score
+            pronunciation_result.completeness_score, pronunciation_result.fluency_score, pronunciation_result.prosody_score
         ))
-        
         nonlocal recognized_words, fluency_scores, durations, prosody_scores
         recognized_words += pronunciation_result.words
         fluency_scores.append(pronunciation_result.fluency_score)
@@ -81,7 +70,6 @@ def pronunciation_assessment_continuous_from_file():
     speech_recognizer.session_started.connect(lambda evt: print('SESSION STARTED: {}'.format(evt)))
     speech_recognizer.session_stopped.connect(lambda evt: print('SESSION STOPPED {}'.format(evt)))
     speech_recognizer.canceled.connect(lambda evt: print('CANCELED {}'.format(evt)))
-
     # stop continuous recognition on either session stopped or canceled events
     speech_recognizer.session_stopped.connect(stop_cb)
     speech_recognizer.canceled.connect(stop_cb)
@@ -89,11 +77,10 @@ def pronunciation_assessment_continuous_from_file():
     # Start continuous pronunciation assessment
     speech_recognizer.start_continuous_recognition()
     while not done:
-        time.sleep(.5)
+        time.sleep(5)
 
     speech_recognizer.stop_continuous_recognition()
 
-    # we need to convert the reference text to lower case, and split to words, then remove the punctuations.
     reference_words = [w.strip(string.punctuation) for w in reference_text.lower().split()]
 
     # For continuous pronunciation assessment mode, the service won't return the words with `Insertion` or `Omission`
@@ -129,37 +116,21 @@ def pronunciation_assessment_continuous_from_file():
             continue
         else:
             final_accuracy_scores.append(word.accuracy_score)
-
     accuracy_score = sum(final_accuracy_scores) / len(final_accuracy_scores)
-
     # Re-calculate fluency score
     fluency_score = sum([x * y for (x, y) in zip(fluency_scores, durations)]) / sum(durations)
-
     # Calculate whole completeness score
-    # Commenting out for now since we are not using a scripted assessment
-    #completeness_score = len([w for w in recognized_words if w.error_type == "None"]) / len(reference_words) * 100
-    #completeness_score = completeness_score if completeness_score <= 100 else 100
-
-    # Re-calculate prosody score. Commenting out completeness score since we are not using a scripted assessment
-    # https://learn.microsoft.com/en-us/azure/ai-services/speech-service/how-to-pronunciation-assessment?pivots=programming-language-csharp#pronunciation-score-calculation
+    completeness_score = len([w for w in recognized_words if w.error_type == "None"]) / len(reference_words) * 100
+    completeness_score = completeness_score if completeness_score <= 100 else 100
+    # Re-calculate prosody score
     prosody_score = sum(prosody_scores) / len(prosody_scores)
-    # this calculation is for scripted assessment
-    #pron_score = accuracy_score * 0.4 + prosody_score * 0.2 + fluency_score * 0.2 + completeness_score * 0.2
-    # this calculation is for unscripted assessment
-    pron_score = accuracy_score * 0.6 + prosody_score * 0.2 + fluency_score * 0.2
+    pron_score = accuracy_score * 0.4 + prosody_score * 0.2 + fluency_score * 0.2 + completeness_score * 0.2
 
-    # Commenting out to remove the completeness score since we are not using a scripted assessment. If we want to choose between the
-    # two, we can introduce logic to print this correctly
-    #print('    Paragraph pronunciation score: {}, accuracy score: {}, completeness score: {}, fluency score: {}, prosody score: {}'.format(
-    #    pron_score, accuracy_score, completeness_score, fluency_score, prosody_score
-    #))
-    print('    Paragraph pronunciation score: {}, accuracy score: {}, fluency score: {}, prosody score: {}'.format(
-        pron_score, accuracy_score, fluency_score, prosody_score
+    print('    Paragraph pronunciation score: {}, accuracy score: {}, completeness score: {}, fluency score: {}, prosody score: {}'.format(
+        pron_score, accuracy_score, completeness_score, fluency_score, prosody_score
     ))
 
     for idx, word in enumerate(final_words):
-        print('    {}: word: {}\t\taccuracy score: {}\terror type: {};'.format(
+        print('    {}: word: {}\taccuracy score: {}\terror type: {};'.format(
             idx + 1, word.word, word.accuracy_score, word.error_type
         ))
-
-#pronunciation_assessment_continuous_from_file()
