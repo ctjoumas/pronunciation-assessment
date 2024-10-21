@@ -10,6 +10,6 @@ def pronunciation_assessment_trigger(req: func.HttpRequest) -> func.HttpResponse
 
     pronunciation_assessment_continuous_from_file()
     return func.HttpResponse(
-            "This HTTP triggered function executed successfully, but no pipeline_id was provided.",
+            "This HTTP triggered function executed successfully.",
             status_code=200
         )
