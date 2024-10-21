@@ -34,27 +34,27 @@ import json
 import time
 import os
 
-def pronunciation_assessment_continuous_rest():
+
+def pronunciation_assessment_continuous_rest(reference_text, audio_file_nm):
     subscriptionKey = os.environ.get('AI_SERVICE_KEY')
     region = os.environ.get('AI_SERVICE_REGION')
 
     # build pronunciation assessment parameters
-    referenceText = "Good morning."
-    pronAssessmentParamsJson = "{\"ReferenceText\":\"%s\",\"GradingSystem\":\"HundredMark\",\"Dimension\":\"Comprehensive\"}" % referenceText
+    pronAssessmentParamsJson = "{\"ReferenceText\":\"%s\",\"GradingSystem\":\"HundredMark\",\"Dimension\":\"Comprehensive\"}" % reference_text
     pronAssessmentParamsBase64 = base64.b64encode(bytes(pronAssessmentParamsJson, 'utf-8'))
     pronAssessmentParams = str(pronAssessmentParamsBase64, "utf-8")
 
     # build request
     url = "https://%s.stt.speech.microsoft.com/speech/recognition/conversation/cognitiveservices/v1?language=en-us" % region
-    headers = { 'Accept': 'application/json;text/xml',
-                'Connection': 'Keep-Alive',
-                'Content-Type': 'audio/wav; codecs=audio/pcm; samplerate=16000',
-                'Ocp-Apim-Subscription-Key': subscriptionKey,
-                'Pronunciation-Assessment': pronAssessmentParams,
-                'Transfer-Encoding': 'chunked',
-                'Expect': '100-continue' }
+    headers = {'Accept': 'application/json;text/xml',
+               'Connection': 'Keep-Alive',
+               'Content-Type': 'audio/wav; codecs=audio/pcm; samplerate=16000',
+               'Ocp-Apim-Subscription-Key': subscriptionKey,
+               'Pronunciation-Assessment': pronAssessmentParams,
+               'Transfer-Encoding': 'chunked',
+               'Expect': '100-continue'}
 
-    audioFile = open('goodmorning.pcm', 'rb')
+    audioFile = open(audio_file_nm, 'rb')
 
     # send request with chunked data
     response = requests.post(url=url, data=get_chunk(audioFile), headers=headers)
@@ -67,19 +67,29 @@ def pronunciation_assessment_continuous_rest():
     latency = getResponseTime - uploadFinishTime
     print("Latency = %sms" % int(latency * 1000))
 
+
 # a generator which reads audio data chunk by chunk
 # the audio_source can be any audio input stream which provides read() method, e.g. audio file, microphone, memory stream, etc.
 def get_chunk(audio_source, chunk_size=1024):
     # a common wave header, with zero audio length
     # since stream data doesn't contain header, but the API requires header to fetch format information, so you need post this header as first chunk for each query
-    WaveHeader16K16BitMono = bytes([ 82, 73, 70, 70, 78, 128, 0, 0, 87, 65, 86, 69, 102, 109, 116, 32, 18, 0, 0, 0, 1, 0, 1, 0, 128, 62, 0, 0, 0, 125, 0, 0, 2, 0, 16, 0, 0, 0, 100, 97, 116, 97, 0, 0, 0, 0 ])
+    WaveHeader16K16BitMono = bytes(
+        [82, 73, 70, 70, 78, 128, 0, 0, 87, 65, 86, 69, 102, 109, 116, 32, 18, 0, 0, 0, 1, 0, 1, 0, 128, 62, 0, 0, 0,
+         125, 0, 0, 2, 0, 16, 0, 0, 0, 100, 97, 116, 97, 0, 0, 0, 0])
 
     yield WaveHeader16K16BitMono
     while True:
-        time.sleep(chunk_size / 32000) # to simulate human speaking rate
+        time.sleep(chunk_size / 32000)  # to simulate human speaking rate
         chunk = audio_source.read(chunk_size)
         if not chunk:
             global uploadFinishTime
             uploadFinishTime = time.time()
             break
         yield chunk
+
+
+# This is for testing by directly calling rest endpoint
+# reference_text= "If Nancy knew more about very small things, " \
+#                 "she wouldn't have been so afraid of climbing to high places to find water"
+# audio_file_nm = "sample_01.wav"
+# pronunciation_assessment_continuous_rest(reference_text, audio_file_nm)
