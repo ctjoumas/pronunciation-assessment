@@ -2,6 +2,7 @@ import azure.functions as func # type: ignore
 import logging
 import os
 from pronunciation_assessment_continuous import pronunciation_assessment_continuous_from_file
+from pronunciation_assessment_rest import pronunciation_assessment_continuous_rest
 
 app = func.FunctionApp(http_auth_level=func.AuthLevel.FUNCTION)
 
@@ -16,6 +17,8 @@ def pronunciation_assessment_trigger(req: func.HttpRequest) -> func.HttpResponse
     # the reference text. If teachers will have a known passage/text the students will read, we can use this which will
     # then include the completeness score below. If we are not using the scripted assessment, we will not be calculating
     # the completeness score (see below)
+
+    #pronunciation_assessment_continuous_rest()
 
     pronunciation_assessment_continuous_from_file(file_name=file_name, reference_text=reference_text)
 
