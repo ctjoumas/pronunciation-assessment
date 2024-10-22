@@ -1,12 +1,10 @@
-import difflib
-import json
-import string
 import time
+import json
+import difflib
+import string
 import azure.cognitiveservices.speech as speechsdk
 import os
-import difflib
-import json
- 
+
 def pronunciation_assessment_continuous_from_file(file_name = str, reference_text = str):
     """Performs continuous pronunciation assessment asynchronously with input from an audio file.
         See more information at https://aka.ms/csspeech/pa"""
@@ -15,9 +13,7 @@ def pronunciation_assessment_continuous_from_file(file_name = str, reference_tex
     ai_service_key = os.environ.get('AI_SERVICE_KEY')
 
     # Creates an instance of a speech config with specified subscription key and service region.
-    # Replace with your own subscription key and service region (e.g., "westus").
     speech_config = speechsdk.SpeechConfig(subscription=ai_service_key, region=ai_service_region)
-    # provide a WAV file as an example. Replace it with your own.
     audio_config = speechsdk.audio.AudioConfig(filename=file_name)
 
     # create pronunciation assessment config, set grading system, granularity and if enable miscue based on your requirement.
@@ -105,7 +101,7 @@ def pronunciation_assessment_continuous_from_file(file_name = str, reference_tex
                     })
                     final_words.append(word)
             if tag == 'equal':
-                final_words += recognized_words[j1:j2]
+                final_words += recognized_words
     else:
         final_words = recognized_words
 
@@ -121,16 +117,22 @@ def pronunciation_assessment_continuous_from_file(file_name = str, reference_tex
     fluency_score = sum([x * y for (x, y) in zip(fluency_scores, durations)]) / sum(durations)
     # Calculate whole completeness score
     completeness_score = len([w for w in recognized_words if w.error_type == "None"]) / len(reference_words) * 100
-    completeness_score = completeness_score if completeness_score <= 100 else 100
-    # Re-calculate prosody score
+    completeness_score = min(completeness_score, 100)
     prosody_score = sum(prosody_scores) / len(prosody_scores)
     pron_score = accuracy_score * 0.4 + prosody_score * 0.2 + fluency_score * 0.2 + completeness_score * 0.2
 
-    print('    Paragraph pronunciation score: {}, accuracy score: {}, completeness score: {}, fluency score: {}, prosody score: {}'.format(
-        pron_score, accuracy_score, completeness_score, fluency_score, prosody_score
-    ))
-
-    for idx, word in enumerate(final_words):
-        print('    {}: word: {}\taccuracy score: {}\terror type: {};'.format(
-            idx + 1, word.word, word.accuracy_score, word.error_type
-        ))
+    # Return the result as a structured dictionary
+    return {
+        'pronunciation_score': pron_score,
+        'accuracy_score': accuracy_score,
+        'completeness_score': completeness_score,
+        'fluency_score': fluency_score,
+        'prosody_score': prosody_score,
+        'words': [
+            {
+                'word': word.word,
+                'accuracy_score': word.accuracy_score,
+                'error_type': word.error_type
+            } for word in final_words
+        ]
+    }
