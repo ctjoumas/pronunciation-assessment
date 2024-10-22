@@ -91,6 +91,11 @@ def get_chunk(audio_source, chunk_size=1024):
 
 
 # This is for testing by directly calling rest endpoint
+
+# reference_text= "If Nancy knew more about very small things, " \
+#                 "she wouldn't have been so afraid of climbing to high places to find water"
+# audio_file_nm = "sample_01.wav"
+
 # reference_text= "The little green man answered, Of course its me. I've come to see if you're happy. No, I'm not happy, Nancy said. And why not? the green man asked"
 # audio_file_nm = "sample_03.wav"
 # pronunciation_assessment_continuous_rest(reference_text, audio_file_nm)
