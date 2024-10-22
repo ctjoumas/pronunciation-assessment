@@ -51,13 +51,14 @@ def pronunciation_assessment_continuous_rest(reference_text, audio_file_nm):
                'Content-Type': 'audio/wav; codecs=audio/pcm; samplerate=16000',
                'Ocp-Apim-Subscription-Key': subscriptionKey,
                'Pronunciation-Assessment': pronAssessmentParams,
-               'Transfer-Encoding': 'chunked',
+               # 'Transfer-Encoding': 'chunked',
                'Expect': '100-continue'}
 
     audioFile = open(audio_file_nm, 'rb')
 
     # send request with chunked data
-    response = requests.post(url=url, data=get_chunk(audioFile), headers=headers)
+    uploadFinishTime = time.time()
+    response = requests.post(url=url, data=audioFile, headers=headers)
     getResponseTime = time.time()
     audioFile.close()
 
@@ -66,6 +67,7 @@ def pronunciation_assessment_continuous_rest(reference_text, audio_file_nm):
 
     latency = getResponseTime - uploadFinishTime
     print("Latency = %sms" % int(latency * 1000))
+    return response.json()
 
 
 # a generator which reads audio data chunk by chunk
@@ -89,7 +91,6 @@ def get_chunk(audio_source, chunk_size=1024):
 
 
 # This is for testing by directly calling rest endpoint
-# reference_text= "If Nancy knew more about very small things, " \
-#                 "she wouldn't have been so afraid of climbing to high places to find water"
-# audio_file_nm = "sample_01.wav"
+# reference_text= "The little green man answered, Of course its me. I've come to see if you're happy. No, I'm not happy, Nancy said. And why not? the green man asked"
+# audio_file_nm = "sample_03.wav"
 # pronunciation_assessment_continuous_rest(reference_text, audio_file_nm)
