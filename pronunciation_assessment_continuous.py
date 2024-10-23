@@ -61,6 +61,19 @@ def pronunciation_assessment_continuous_from_file(file_name = str, reference_tex
         nb = jo['NBest'][0]
         durations.append(sum([int(w['Duration']) for w in nb['Words']]))
 
+    def final_words_serializer(objs):
+        result_array = []
+
+        for obj in objs:
+            result_dict = {
+                "word": obj.word,
+            "error_type": obj.error_type
+            }
+
+            result_array.append(result_dict)
+
+        return result_array
+
     # Connect callbacks to the events fired by the speech recognizer
     speech_recognizer.recognized.connect(recognized)
     speech_recognizer.session_started.connect(lambda evt: print('SESSION STARTED: {}'.format(evt)))
@@ -105,6 +118,8 @@ def pronunciation_assessment_continuous_from_file(file_name = str, reference_tex
     else:
         final_words = recognized_words
 
+    #json_string = final_words_serializer(final_words)
+
     # We can calculate whole accuracy by averaging
     final_accuracy_scores = []
     for word in final_words:
@@ -112,6 +127,7 @@ def pronunciation_assessment_continuous_from_file(file_name = str, reference_tex
             continue
         else:
             final_accuracy_scores.append(word.accuracy_score)
+
     accuracy_score = sum(final_accuracy_scores) / len(final_accuracy_scores)
     # Re-calculate fluency score
     fluency_score = sum([x * y for (x, y) in zip(fluency_scores, durations)]) / sum(durations)
