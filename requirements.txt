@@ -6,3 +6,4 @@ azure-functions
 azure.cognitiveservices.speech
 requests
 flask
+AzureOpenAI
