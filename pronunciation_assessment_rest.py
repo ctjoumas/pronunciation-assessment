@@ -66,6 +66,9 @@ def pronunciation_assessment_continuous_rest(reference_text, audio_file_nm):
     print("Latency = %sms" % int(latency * 1000))
     return response.json()
 
+     # Return the result as a structured dictionary
+    return resultJson
+
 
 # a generator which reads audio data chunk by chunk
 # the audio_source can be any audio input stream which provides read() method, e.g. audio file, microphone, memory stream, etc.
