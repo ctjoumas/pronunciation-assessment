@@ -35,8 +35,8 @@ def sanitize_words(final_words = str, reference_text = str):
     return cleaned_text
 
 # Example usage
-# final_words = "the little green man the little green man"
-# reference_text = "the little green"
+#final_words = "the little green man the little green man"
+#reference_text = "the little green"
 
-# cleaned_text = sanitize_words(final_words, reference_text)
-# print(cleaned_text)
+#cleaned_text = sanitize_words(final_words, reference_text)
+#print(cleaned_text)
