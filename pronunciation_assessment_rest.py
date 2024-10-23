@@ -40,7 +40,7 @@ def pronunciation_assessment_continuous_rest(reference_text, audio_file_nm):
     region = os.environ.get('AI_SERVICE_REGION')
 
     # build pronunciation assessment parameters
-    pronAssessmentParamsJson = "{\"ReferenceText\":\"%s\",\"GradingSystem\":\"HundredMark\",\"Dimension\":\"Comprehensive\"}" % reference_text
+    pronAssessmentParamsJson = "{\"ReferenceText\":\"%s\",\"GradingSystem\":\"HundredMark\",\"Dimension\":\"Comprehensive\",\"EnableMiscue\":\"True\"}" % reference_text
     pronAssessmentParamsBase64 = base64.b64encode(bytes(pronAssessmentParamsJson, 'utf-8'))
     pronAssessmentParams = str(pronAssessmentParamsBase64, "utf-8")
 
@@ -61,9 +61,6 @@ def pronunciation_assessment_continuous_rest(reference_text, audio_file_nm):
     response = requests.post(url=url, data=audioFile, headers=headers)
     getResponseTime = time.time()
     audioFile.close()
-
-    resultJson = json.loads(response.text)
-    print(json.dumps(resultJson, indent=4))
 
     latency = getResponseTime - uploadFinishTime
     print("Latency = %sms" % int(latency * 1000))
