@@ -4,7 +4,7 @@ import difflib
 import string
 import azure.cognitiveservices.speech as speechsdk
 import os
-from azure_openai_service import sanitize_words
+#from azure_openai_service import sanitize_words
 
 def pronunciation_assessment_continuous_from_file(file_name = str, reference_text = str):
     """Performs continuous pronunciation assessment asynchronously with input from an audio file.
