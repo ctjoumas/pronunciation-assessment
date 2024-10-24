@@ -1,0 +1,68 @@
+****** SDK as is "nancy_re-reading_sample_04.wav"
+
+############# REFERENCE TEXT
+If Nancy knew more about very small things, she wouldn't have been so afraid of climbing to high places to find water. Here's the rule. If tiny animals fall from high places,
+############# SDK TEXT
+if nancy if nancy if nancy knew more about very small things she wouldn't she wouldn't have been so afraid of climbing high places to find water here's the rule if tiny if tiny if tiny animals fall from the high places she wouldn't if nancy if nancy knew more about very small things she wouldn't she wouldn't have been so afraid of climbing high places to find water here's the rule if tiny if tiny if tiny animals fall from the high places to if nancy if nancy knew more about very small things she wouldn't she wouldn't have been so afraid of climbing high places to find water here's the rule if tiny if tiny if tiny animals fall from the high places if tiny if tiny if nancy if nancy knew more about very small things she wouldn't she wouldn't have been so afraid of climbing high places to find water here's the rule if tiny if tiny if tiny animals fall from the high places the if nancy if nancy knew more about very small things she wouldn't she wouldn't have been so afraid of climbing high places to find water here's the rule if tiny if tiny if tiny animals fall from the high places
+
+############# REST TEXT
+if nancy if nancy knew more about very small things she wouldn't she wouldn't have been so afraid of climbing to high places to find water here's the rule if tiny if tiny if tiny animals fall from the high places
+############# SDK SCORE
+if(a:100.0,e:I) nancy(a:98.0,e:I) if(a:100.0,e:I) nancy(a:98.0,e:I) if nancy knew more about very small things she wouldn't she(a:100.0,e:I) wouldn't(a:100.0,e:I) have been so afraid(a:53.0,e:M) of climbing high places to find water(a:48.0,e:M) here's(a:50.0,e:M) the rule if tiny if(a:100.0,e:I) tiny(a:98.0,e:I) if(a:100.0,e:I) tiny(a:100.0,e:I) animals fall from the(a:100.0,e:I) high places she(a:100.0,e:I) wouldn't(a:100.0,e:I) if(a:100.0,e:I) nancy(a:98.0,e:I) if nancy knew more about very small things she wouldn't she(a:100.0,e:I) wouldn't(a:100.0,e:I) have been so afraid(a:53.0,e:M) of climbing high places to find water(a:48.0,e:M) here's(a:50.0,e:M) the rule if tiny if(a:100.0,e:I) tiny(a:98.0,e:I) if(a:100.0,e:I) tiny(a:100.0,e:I) animals fall from the(a:100.0,e:I) high places to(a:0,e:O) if(a:100.0,e:I) nancy(a:98.0,e:I) if nancy knew more about very small things she wouldn't she(a:100.0,e:I) wouldn't(a:100.0,e:I) have been so afraid(a:53.0,e:M) of climbing high places to find water(a:48.0,e:M) here's(a:50.0,e:M) the rule if tiny if(a:100.0,e:I) tiny(a:98.0,e:I) if(a:100.0,e:I) tiny(a:100.0,e:I) animals fall from the(a:100.0,e:I) high places if(a:100.0,e:I) tiny(a:98.0,e:I) if(a:100.0,e:I) tiny(a:100.0,e:I) if(a:100.0,e:I) nancy(a:98.0,e:I) if nancy knew more about very small things she wouldn't she(a:100.0,e:I) wouldn't(a:100.0,e:I) have been so afraid(a:53.0,e:M) of climbing high places to find water(a:48.0,e:M) here's(a:50.0,e:M) the rule if tiny if(a:100.0,e:I) tiny(a:98.0,e:I) if(a:100.0,e:I) tiny(a:100.0,e:I) animals fall from the(a:100.0,e:I) high places the(a:100.0,e:I) if(a:100.0,e:I) nancy(a:98.0,e:I) if nancy knew more about very small things she wouldn't she(a:100.0,e:I) wouldn't(a:100.0,e:I) have been so afraid(a:53.0,e:M) of climbing high places to find water(a:48.0,e:M) here's(a:50.0,e:M) the rule if tiny if(a:100.0,e:I) tiny(a:98.0,e:I) if(a:100.0,e:I) tiny(a:100.0,e:I) animals fall from the(a:100.0,e:I) high places
+############# REST SCORE
+if nancy if(a:100.0,e:I) nancy(a:98.0,e:I) knew more about very small things she wouldn't she(a:100.0,e:I) wouldn't(a:100.0,e:I) have been so afraid(a:55.0,e:M) of climbing to(a:0.0,e:O) high places to find water here's(a:44.0,e:M) the rule if tiny if(a:100.0,e:I) tiny(a:96.0,e:I) if(a:100.0,e:I) tiny(a:100.0,e:I) animals fall from the(a:100.0,e:I) high places
+
+************************************************************
+****** SDK Update to handle replacement & avoid adding same words multiple times
+************************************************************
+
+############# REFERENCE TEXT File: nancy_sample_04.wav
+If Nancy knew more about very small things, she wouldn't have been so afraid of climbing to high places to find water. Here's the rule. If tiny animals fall from high places,
+############# SDK TEXT
+if nancy knew more about very small things she wouldn't have been so afraid of climbing to high places to find water here's the rule if tiny animals fall from high places
+############# REST TEXT
+if nancy knew more about very small things she wouldn't have been so afraid of climbing to high places to find water here's the rule if tiny animals fall from high places
+############# SDK SCORE
+if nancy knew more about very small things she wouldn't have been so afraid of climbing to high places to find water here's(a:50.0,e:M) the rule if tiny animals fall from high places
+############# REST SCORE
+if nancy knew more about very small things she wouldn't have been so afraid of climbing to high places to find water here's(a:50.0,e:M) the rule if tiny animals fall from high places
+
+############# REFERENCE TEXT File: nancy_re-reading_sample_04.wav
+If Nancy knew more about very small things, she wouldn't have been so afraid of climbing to high places to find water. Here's the rule. If tiny animals fall from high places,
+############# SDK TEXT
+if nancy if nancy knew more about very small things she wouldn't she wouldn't have been so afraid of climbing to high places to find water here's the rule if tiny if tiny if tiny animals fall from the high places
+############# REST TEXT
+if nancy if nancy knew more about very small things she wouldn't she wouldn't have been so afraid of climbing to high places to find water here's the rule if tiny if tiny if tiny animals fall from the high places
+############# SDK SCORE
+if(a:100.0,e:I) nancy(a:98.0,e:I) if nancy knew more about very small things she wouldn't she(a:100.0,e:I) wouldn't(a:100.0,e:I) have been so afraid(a:53.0,e:M) of climbing to(a:0,e:O) high places to find water(a:48.0,e:M) here's(a:50.0,e:M) the rule if tiny if(a:100.0,e:I) tiny(a:98.0,e:I) if(a:100.0,e:I) tiny(a:100.0,e:I) animals fall from the(a:100.0,e:I) high places
+############# REST SCORE
+if nancy if(a:100.0,e:I) nancy(a:98.0,e:I) knew more about very small things she wouldn't she(a:100.0,e:I) wouldn't(a:100.0,e:I) have been so afraid(a:55.0,e:M) of climbing to(a:0.0,e:O) high places to find water here's(a:44.0,e:M) the rule if tiny if(a:100.0,e:I) tiny(a:96.0,e:I) if(a:100.0,e:I) tiny(a:100.0,e:I) animals fall from the(a:100.0,e:I) high places
+
+************************************************************
+
+############# REFERENCE TEXT File: nancy_mispronunciation_sample_04.wav
+If Nancy knew more about very small things, she wouldn't have been so afraid of climbing to high places to find water. Here's the rule. If tiny animals fall from high places,
+############# SDK TEXT
+if nancy knew more about very been small things she wouldn't have been so have the afraid of climbing to high places to find water if here's the rule if tiny animals fall from the small high places
+############# REST TEXT
+if nancy knew more about very small been things she wouldn't have been so afraid have the of climbing to high places to find water here's the rule if tiny animals fall from high the small places
+############# SDK SCORE
+if nancy knew(a:26.0,e:M) more about very been(a:1.0,e:M) small(a:0,e:S) things she wouldn't(a:13.0,e:M) have been so have(a:21.0,e:M) the(a:86.0,e:S) afraid(a:0,e:S) of climbing to high places to find water if(a:88.0,e:I) here's(a:28.0,e:M) the rule if tiny animals fall from the(a:98.0,e:S) small(a:100.0,e:S) high(a:0,e:S) places
+############# REST SCORE
+if nancy knew(a:26.0,e:M) more about very small(a:0.0,e:O) been(a:1.0,e:I) things she wouldn't(a:13.0,e:M) have been so afraid(a:0.0,e:O) have(a:20.0,e:I) the(a:86.0,e:I) of climbing to high places to find water here's(a:47.0,e:M) the rule if tiny animals fall from high(a:0.0,e:O) the(a:98.0,e:I) small(a:100.0,e:I) places
+
+************************************************************
+############# REFERENCE TEXT File: nancy_inseration_sample_04.wav
+If Nancy knew more about very small things, she wouldn't have been so afraid of climbing to high places to find water. Here's the rule. If tiny animals fall from high places,
+############# SDK TEXT
+if nancy knew more about very small things water here's the been been been nancy she wouldn't have been so afraid of climbing to high places to find water here's the rule if tiny animals fall from high places
+############# REST TEXT
+if nancy knew more about very small things water here's the been been been nancy she wouldn't have been so afraid of climbing to high places to find water here's the rule if tiny animals fall from high places
+############# SDK SCORE
+if nancy knew more about very small things water(a:2.0,e:M) here's(a:4.0,e:M) the(a:80.0,e:I) been(a:2.0,e:M) been(a:2.0,e:M) been(a:4.0,e:M) nancy(a:1.0,e:M) she wouldn't have been so(a:0,e:O) afraid(a:53.0,e:M) of climbing to high places to find water here's(a:53.0,e:M) the rule if tiny animals fall from high places
+############# REST SCORE
+if nancy knew more about very small things water(a:2.0,e:I) here's(a:4.0,e:I) the(a:32.0,e:I) been(a:2.0,e:I) been(a:2.0,e:I) been(a:4.0,e:I) nancy(a:1.0,e:I) she wouldn't have been so(a:0.0,e:O) afraid(a:51.0,e:M) of climbing to high places to find water here's(a:52.0,e:M) the rule if tiny animals fall from high places
+
+************************************************************
+
+
