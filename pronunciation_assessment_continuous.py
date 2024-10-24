@@ -173,6 +173,6 @@ def pronunciation_assessment_continuous_from_file(file_name=str, reference_text=
                 'word': word['word'],
                 'accuracy_score': word['accuracy_score'],
                 'error_type': word['error_type']
-            } for word in final_words
+            } for word in sanitized_words_list['words']
         ]
     }
