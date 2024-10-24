@@ -4,6 +4,8 @@ import difflib
 import string
 import azure.cognitiveservices.speech as speechsdk
 import os
+
+from azure_openai_service import sanitize_words
 #from azure_openai_service import sanitize_words
 
 def pronunciation_assessment_continuous_from_file(file_name = str, reference_text = str):
@@ -68,7 +70,8 @@ def pronunciation_assessment_continuous_from_file(file_name = str, reference_tex
         for obj in objs:
             result_dict = {
                 "word": obj.word,
-            "error_type": obj.error_type
+                "error_type": obj.error_type,
+                "accuracy_score": obj.accuracy_score
             }
 
             result_array.append(result_dict)
@@ -119,22 +122,26 @@ def pronunciation_assessment_continuous_from_file(file_name = str, reference_tex
     else:
         final_words = recognized_words
 
-    #final_words = final_words_serializer(final_words)
-    #sanitized_text = sanitize_words(final_words, reference_text)
-
+    final_words = final_words_serializer(final_words)
+    sanitized_words_list = sanitize_words(final_words, reference_text)
+    
     # We can calculate whole accuracy by averaging
     final_accuracy_scores = []
-    for word in final_words:
-        if word.error_type == 'Insertion':
+    
+    for word in sanitized_words_list['words']:
+        #if word.error_type == 'Insertion':
+        if word['error_type'] == 'Insertion':
             continue
         else:
-            final_accuracy_scores.append(word.accuracy_score)
+            #final_accuracy_scores.append(word.accuracy_score)
+            final_accuracy_scores.append(word['accuracy_score'])
 
     accuracy_score = sum(final_accuracy_scores) / len(final_accuracy_scores)
     # Re-calculate fluency score
     fluency_score = sum([x * y for (x, y) in zip(fluency_scores, durations)]) / sum(durations)
     # Calculate whole completeness score
-    completeness_score = len([w for w in recognized_words if w.error_type == "None"]) / len(reference_words) * 100
+    #completeness_score = len([w for w in recognized_words if w.error_type == "None"]) / len(reference_words) * 100
+    completeness_score = len([w for w in sanitized_words_list['words'] if w['error_type'] == "None"]) / len(reference_words) * 100
     completeness_score = min(completeness_score, 100)
     prosody_score = sum(prosody_scores) / len(prosody_scores)
     pron_score = accuracy_score * 0.4 + prosody_score * 0.2 + fluency_score * 0.2 + completeness_score * 0.2
@@ -148,9 +155,12 @@ def pronunciation_assessment_continuous_from_file(file_name = str, reference_tex
         'prosody_score': prosody_score,
         'words': [
             {
-                'word': word.word,
-                'accuracy_score': word.accuracy_score,
-                'error_type': word.error_type
-            } for word in final_words
+                'word': word['word'],
+                'accuracy_score': word['accuracy_score'],
+                'error_type': word['error_type']
+                #'word': word.word,
+                #'accuracy_score': word.accuracy_score,
+                #'error_type': word.error_type
+            } for word in sanitized_words_list['words']
         ]
     }
