@@ -6,7 +6,8 @@ import azure.cognitiveservices.speech as speechsdk
 import os
 #from azure_openai_service import sanitize_words
 
-def pronunciation_assessment_continuous_from_file(file_name = str, reference_text = str):
+
+def pronunciation_assessment_continuous_from_file(file_name=str, reference_text=str):
     """Performs continuous pronunciation assessment asynchronously with input from an audio file.
         See more information at https://aka.ms/csspeech/pa"""
 
@@ -100,12 +101,25 @@ def pronunciation_assessment_continuous_from_file(file_name = str, reference_tex
         diff = difflib.SequenceMatcher(None, reference_words, [x.word.lower() for x in recognized_words])
         final_words = []
         for tag, i1, i2, j1, j2 in diff.get_opcodes():
-            if tag in ['insert', 'replace']:
+            if tag in ['replace']:
+                for word in recognized_words[j1:j2]:
+                    if word.error_type == 'None':
+                        word._error_type = 'Substitution'
+                    final_words.append(word)
+                for word_text in reference_words[i1:i2]:
+                    word = speechsdk.PronunciationAssessmentWordResult({
+                        'Word': word_text,
+                        'PronunciationAssessment': {
+                            'ErrorType': 'Substitution',
+                        }
+                    })
+                    final_words.append(word)
+            if tag in ['insert']:
                 for word in recognized_words[j1:j2]:
                     if word.error_type == 'None':
                         word._error_type = 'Insertion'
                     final_words.append(word)
-            if tag in ['delete', 'replace']:
+            if tag in ['delete']:
                 for word_text in reference_words[i1:i2]:
                     word = speechsdk.PronunciationAssessmentWordResult({
                         'Word': word_text,
@@ -115,7 +129,8 @@ def pronunciation_assessment_continuous_from_file(file_name = str, reference_tex
                     })
                     final_words.append(word)
             if tag == 'equal':
-                final_words += recognized_words
+                for word in recognized_words[j1:j2]:
+                    final_words.append(word)
     else:
         final_words = recognized_words
 
@@ -146,11 +161,5 @@ def pronunciation_assessment_continuous_from_file(file_name = str, reference_tex
         'completeness_score': completeness_score,
         'fluency_score': fluency_score,
         'prosody_score': prosody_score,
-        'words': [
-            {
-                'word': word.word,
-                'accuracy_score': word.accuracy_score,
-                'error_type': word.error_type
-            } for word in final_words
-        ]
+        'words': final_words
     }
