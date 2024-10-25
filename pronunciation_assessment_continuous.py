@@ -5,8 +5,8 @@ import string
 import azure.cognitiveservices.speech as speechsdk
 import os
 
+from azure_openai_service import sanitize_words_sdk
 from azure_openai_service import sanitize_words
-#from azure_openai_service import sanitize_words
 
 
 def pronunciation_assessment_continuous_from_file(file_name=str, reference_text=str):
@@ -138,7 +138,7 @@ def pronunciation_assessment_continuous_from_file(file_name=str, reference_text=
         final_words = recognized_words
 
     final_words = final_words_serializer(final_words)
-    sanitized_words_list = sanitize_words(final_words, reference_text)
+    sanitized_words_list = sanitize_words_sdk(final_words, reference_text)
     
     # We can calculate whole accuracy by averaging
     final_accuracy_scores = []
