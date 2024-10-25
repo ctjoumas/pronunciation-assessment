@@ -44,6 +44,16 @@ def pronunciation_assessment_continuous_rest(reference_text, audio_file_nm):
     pronAssessmentParamsBase64 = base64.b64encode(bytes(pronAssessmentParamsJson, 'utf-8'))
     pronAssessmentParams = str(pronAssessmentParamsBase64, "utf-8")
 
+    # create phrase list
+    """
+    with open('special_words.json', 'r') as file:
+        phraseList = json.load(file)
+        
+    phraseListJson = "{\"phrases\": %s}" % phraseList
+    phraseListBase64 = base64.b64encode(bytes(phraseListJson, 'utf-8'))
+    phraseListEncoded = str(phraseListBase64, "utf-8")
+    """
+
     # build request
     url = "https://%s.stt.speech.microsoft.com/speech/recognition/conversation/cognitiveservices/v1?language=en-us" % region
     headers = {'Accept': 'application/json;text/xml',
@@ -51,6 +61,7 @@ def pronunciation_assessment_continuous_rest(reference_text, audio_file_nm):
                'Content-Type': 'audio/wav; codecs=audio/pcm; samplerate=16000',
                'Ocp-Apim-Subscription-Key': subscriptionKey,
                'Pronunciation-Assessment': pronAssessmentParams,
+               #'Phrase-List': phraseListEncoded,
                # 'Transfer-Encoding': 'chunked',
                'Expect': '100-continue'}
 
