@@ -59,29 +59,29 @@ def sanitize_words(words = json, reference_text = str):
 
     prompt = f"""
     You are a helpful assistant who will remove repeated words from a string of text. The words
-    come from a student reading a passage which is converted to text, as described in Words.
-    The Reference Text is the transcript of the actual passage, so this may differ from Words
+    come from a student reading a passage which is converted to text, as described in Recorded Words.
+    Reference Text is the actual transcript of the passage, so this may differ from Recorded Words
     depending on how the student reads the passage.
     The words are very important as they are used to assess the pronunciation of these words
     by the student.
     Each word will have an error type and you are only concerned with "Insertion" errors, which means
-    the word was either repeated by the student or added by the student. We only want to remove
-    repeated words as added words are valid and will still have pronunciation scores. The Words
-    supplied are in JSON format and will have other properties aside from Word and ErrorType, but you
-    do not need to worry about these. However, these will need to be included in the response.
+    the word was either repeated by the student or added by the student. You will only remove
+    repeated words and not added words because added words are valid and will still have pronunciation
+    scores. The Recorded Words supplied are in JSON format and will have other properties aside
+    from Word and ErrorType, but you do not need to worry about these. However, these will need to be
+    included in the response.
 
-    You must compare Words to Reference text and determine which "Insertion" error words are
-    repeated and remove these in your final cleaned-up version. These same words may appear later
-    in Words but may not be repeated words. As an example, where Words is the JSON structure mentioned above,
-    but with additional properties excluded:
+    You must compare Recorded Words to Reference Text and determine which words with "Insertion" errors are
+    repeated. You will remove these in your final cleaned-up JSON list of words. As an example:
 
-    Words: {words_example_str} 
+    Recorded Words: {words_example_str} 
     Reference Text: The little green man answered, Of course its me. I've come to see if you're happy. 
     Result: {words_example_result}
 
-    If there are other insertion errors, you must use your judgement to determine if these are added or repeated words.
+    Since not all words with an "Insertion" error are repeated words, you must use your judgement to determine if these are repeated words
+    or added words and not remove what you determine are added words.
     
-    Words: {words}
+    Recorded Words: {words}
     
     Reference Text: {reference_text}
     
