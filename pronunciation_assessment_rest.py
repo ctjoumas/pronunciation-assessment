@@ -35,6 +35,18 @@ import time
 import os
 
 
+def final_words_serializer(data):
+        extracted_data = [
+        {
+            'Word': entry['Word'],
+            'ErrorType': entry['ErrorType'],
+            'AccuracyScore': entry['AccuracyScore']
+        }
+        for entry in data
+        ]
+        
+        return extracted_data
+
 def pronunciation_assessment_continuous_rest(reference_text, audio_file_nm):
     subscriptionKey = os.environ.get('AI_SERVICE_KEY')
     region = os.environ.get('AI_SERVICE_REGION')
@@ -69,7 +81,6 @@ def pronunciation_assessment_continuous_rest(reference_text, audio_file_nm):
      # Return the result as a structured dictionary
     return resultJson
 
-
 # a generator which reads audio data chunk by chunk
 # the audio_source can be any audio input stream which provides read() method, e.g. audio file, microphone, memory stream, etc.
 def get_chunk(audio_source, chunk_size=1024):
@@ -88,7 +99,6 @@ def get_chunk(audio_source, chunk_size=1024):
             uploadFinishTime = time.time()
             break
         yield chunk
-
 
 # This is for testing by directly calling rest endpoint
 

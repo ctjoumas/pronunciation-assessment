@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 import logging
 from azure_openai_service import sanitize_words
 from pronunciation_assessment_continuous import pronunciation_assessment_continuous_from_file
-from pronunciation_assessment_rest import pronunciation_assessment_continuous_rest
+from pronunciation_assessment_rest import final_words_serializer, pronunciation_assessment_continuous_rest
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
@@ -36,6 +36,8 @@ def pronunciation_assessment_trigger():
     # pull out the Words list from the JSON so we can use Azure OpenAI to remove repeated words
     words_json = result['NBest'][0]['Words']
     
+    words_json = final_words_serializer(words_json)
+
     # get the updated words JSON with repeated words removed using Azure OpenAI
     words_json =  sanitize_words(words_json, reference_text)
 
