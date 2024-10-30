@@ -52,41 +52,34 @@ class WordList(BaseModel):
     words: list[Word]
 
 
-def sanitize_words(words = json, reference_text = str):
-    words_example = [{'Word': 'the', 'ErrorType': 'Insertion'}, {'Word': 'little', 'ErrorType': 'Insertion'}, {'Word': 'green', 'ErrorType': 'Insertion'}, {'Word': 'man', 'ErrorType': 'Insertion'}, {'Word': 'the', 'ErrorType': 'Insertion'}, {'Word': 'little', 'ErrorType': 'Insertion'}, {'Word': 'green', 'ErrorType': 'Insertion'}, {'Word': 'man', 'ErrorType': 'Insertion'}, {'Word': 'the', 'ErrorType': 'None'}, {'Word': 'little', 'ErrorType': 'None'}, {'Word': 'green', 'ErrorType': 'None'}, {'Word': 'man', 'ErrorType': 'None'}, {'Word': 'answered', 'ErrorType': 'None'}, {'Word': 'of', 'ErrorType': 'None'}, {'Word': 'course', 'ErrorType': 'None'}, {'Word': 'its', 'ErrorType': 'None'}, {'Word': 'me', 'ErrorType': 'None'}, {'Word': "i've", 'ErrorType': 'Mispronunciation'}, {'Word': 'come', 'ErrorType': 'Insertion'}, {'Word': "i've", 'ErrorType': 'Mispronunciation'}, {'Word': 'come', 'ErrorType': 'None'}, {'Word': 'to', 'ErrorType': 'None'}, {'Word': 'see', 'ErrorType': 'None'}, {'Word': 'if', 'ErrorType': 'None'}, {'Word': "you're", 'ErrorType': 'None'}, {'Word': 'happy', 'ErrorType': 'None'}]
-    words_example_result = [{'Word': 'the', 'ErrorType': 'None'}, {'Word': 'little', 'ErrorType': 'None'}, {'Word': 'green', 'ErrorType': 'None'}, {'Word': 'man', 'ErrorType': 'None'}, {'Word': 'answered', 'ErrorType': 'None'}, {'Word': 'of', 'ErrorType': 'None'}, {'Word': 'course', 'ErrorType': 'None'}, {'Word': 'its', 'ErrorType': 'None'}, {'Word': 'me', 'ErrorType': 'None'}, {'Word': "i've", 'ErrorType': 'Mispronunciation'}, {'Word': 'come', 'ErrorType': 'Insertion'}, {'Word': 'to', 'ErrorType': 'None'}, {'Word': 'see', 'ErrorType': 'None'}, {'Word': 'if', 'ErrorType': 'None'}, {'Word': "you're", 'ErrorType': 'None'}, {'Word': 'happy', 'ErrorType': 'None'}]
-    words_example_str = str(words_example)
-
+def sanitize_words(words = json):
+    print(words)
     prompt = f"""
-    You are a helpful assistant who will remove repeated words from a string of text. The words
-    come from a student reading a passage which is converted to text, as described in Recorded Words.
-    Reference Text is the actual transcript of the passage, so this may differ from Recorded Words
-    depending on how the student reads the passage.
-    The words are very important as they are used to assess the pronunciation of these words
-    by the student.
-    Each word will have an error type and you are only concerned with "Insertion" errors, which means
-    the word was either repeated by the student or added by the student. You will only remove
-    repeated words and not added words because added words are valid and will still have pronunciation
-    scores. The Recorded Words supplied are in JSON format and will have other properties aside
-    from Word and ErrorType, but you do not need to worry about these. However, these will need to be
-    included in the response.
+    I have a JSON list of words with an ErrorType property from a WAV file processed through the Azure's
+    pronunciation assessment. An ErrorType of "Insertion" indicates that the student repeated or added
+    this word.
+     
+    Please analyze the list and return a new JSON object that removes the repeated words and phrases.
 
-    You must compare Recorded Words to Reference Text and determine which words with "Insertion" errors are
-    repeated. You will remove these in your final cleaned-up JSON list of words. As an example:
+    If a word or series of words which make up a phrase are marked as "Insertion" errors, check to see if 
+    it comes before another instance of itself (regardless of whether it's marked as "Insertion" errors or 
+    not). If it does, it should be removed.
+      Examples, showing only insertion errors in parentheses next to repeated or added words:
+        Input: It was (Insertion) was a cold day.
+        Result: It was a cold day.
+        Reasoning: In this case, the first "was" is an insertion error and preceded another instance of itself
 
-    Recorded Words: {words_example_str} 
-    Reference Text: The little green man answered, Of course its me. I've come to see if you're happy. 
-    Result: {words_example_result}
+        Input: The (Insertion) sky (Insertion) was (Insertion) the sky was blue without any (Insertion) clouds
+        Result: The sky was blue without any clouds
+        Reasoning: In this case, the words "The", "sky" and "was" are labeled as Insertion errors and as a phrase 
+        (the sky was) directly precedes another instance of itself. "Any" is labeled as an Insertion error, but
+        it does not precede itself so this is probably an added word by the reader so is not removed.
 
-    Since not all words with an "Insertion" error are repeated words, you must use your judgement to determine if these are repeated words
-    or added words and not remove what you determine are added words.
-    
-    Recorded Words: {words}
-    
-    Reference Text: {reference_text}
-    
-    Only return a list of the words, using the Result example above as reference. You must maintain the same JSON structure in your response, so you must include
-    all other properties for each word as given to you in the words input. Do not add any additional text or commentary or characters to the result.
+    The words in the JSON list will have other properties (such as AccuracyScore), which should be retained in the output.
+
+    Here is the JSON list: {words}
+
+    Please provide the cleaned JSON list.
     """
 
     #response = client.chat.completions.create(
@@ -105,37 +98,33 @@ def sanitize_words(words = json, reference_text = str):
 
     return cleaned_text_json
 
-def sanitize_words_sdk(final_words = str, reference_text = str):
-    final_words_example = [{'word': 'the', 'error_type': 'Insertion', 'accuracy_score': '90.0'}, {'word': 'little', 'error_type': 'Insertion', 'accuracy_score': '90.0'}, {'word': 'green', 'error_type': 'Insertion', 'accuracy_score': '90.0'}, {'word': 'man', 'error_type': 'Insertion', 'accuracy_score': '90.0'}, {'word': 'the', 'error_type': 'Insertion', 'accuracy_score': '90.0'}, {'word': 'little', 'error_type': 'Insertion', 'accuracy_score': '90.0'}, {'word': 'green', 'error_type': 'Insertion', 'accuracy_score': '90.0'}, {'word': 'man', 'error_type': 'Insertion', 'accuracy_score': '90.0'}, {'word': 'the', 'error_type': 'None', 'accuracy_score': '90.0'}, {'word': 'little', 'error_type': 'None', 'accuracy_score': '90.0'}, {'word': 'green', 'error_type': 'None', 'accuracy_score': '90.0'}, {'word': 'man', 'error_type': 'None', 'accuracy_score': '90.0'}, {'word': 'answered', 'error_type': 'None', 'accuracy_score': '90.0'}, {'word': 'of', 'error_type': 'None', 'accuracy_score': '90.0'}, {'word': 'course', 'error_type': 'None', 'accuracy_score': '90.0'}, {'word': 'its', 'error_type': 'None', 'accuracy_score': '90.0'}, {'word': 'me', 'error_type': 'None', 'accuracy_score': '90.0'}, {'word': "i've", 'error_type': 'Mispronunciation', 'accuracy_score': '90.0'}, {'word': 'come', 'error_type': 'Insertion', 'accuracy_score': '90.0'}, {'word': "i've", 'error_type': 'Mispronunciation', 'accuracy_score': '90.0'}, {'word': 'come', 'error_type': 'None', 'accuracy_score': '90.0'}, {'word': 'to', 'error_type': 'None', 'accuracy_score': '90.0'}, {'word': 'see', 'error_type': 'None', 'accuracy_score': '90.0'}, {'word': 'if', 'error_type': 'None', 'accuracy_score': '90.0'}, {'word': "you're", 'error_type': 'None', 'accuracy_score': '90.0'}, {'word': 'happy', 'error_type': 'None', 'accuracy_score': '90.0'}]
-    words_example_result = [{'word': 'the', 'error_type': 'None', 'accuracy_score': '90.0'}, {'word': 'little', 'error_type': 'None', 'accuracy_score': '90.0'}, {'word': 'green', 'error_type': 'None', 'accuracy_score': '90.0'}, {'word': 'man', 'error_type': 'None', 'accuracy_score': '90.0'}, {'word': 'answered', 'error_type': 'None', 'accuracy_score': '90.0'}, {'word': 'of', 'error_type': 'None', 'accuracy_score': '90.0'}, {'word': 'course', 'error_type': 'None', 'accuracy_score': '90.0'}, {'word': 'its', 'error_type': 'None', 'accuracy_score': '90.0'}, {'word': 'me', 'error_type': 'None', 'accuracy_score': '90.0'}, {'word': "i've", 'error_type': 'Mispronunciation', 'accuracy_score': '90.0'}, {'word': 'come', 'error_type': 'Insertion', 'accuracy_score': '90.0'}, {'word': 'to', 'error_type': 'None', 'accuracy_score': '90.0'}, {'word': 'see', 'error_type': 'None', 'accuracy_score': '90.0'}, {'word': 'if', 'error_type': 'None', 'accuracy_score': '90.0'}, {'word': "you're", 'error_type': 'None', 'accuracy_score': '90.0'}, {'word': 'happy', 'error_type': 'None', 'accuracy_score': '90.0'}]
-    final_words_example_str = str(final_words_example)
-
+def sanitize_words_sdk(words = str):
     prompt = f"""
-    You are a helpful assistant who will remove repeated words from a string of text. The words
-    come from a student reading a passage which is converted to text, as described in Final Words.
-    The Reference Text is the transcript of the actual passage, so this may differ from Final Words
-    depending on how the student reads the passage.
-    The final words are very important as they are used to assess the pronunciation of these words
-    by the student.
-    Each word will have an error type and you are only concerned with "Insertion" errors, which means
-    the word was either repeated by the student or added by the student. We only want to remove
-    repeated words as added words are valid and will still have pronunciation scores.
+    I have a JSON list of words with an ErrorType property from a WAV file processed through the Azure's
+    pronunciation assessment. An ErrorType of "Insertion" indicates that the student repeated or added
+    this word.
+     
+    Please analyze the list and return a new JSON object that removes the repeated words and phrases.
 
-    You must compare Final Words to Reference text and determine which "Insertion" error words are
-    repeated and remove these in your final cleaned-up version. These same words may appear later
-    in Final words but may not be repeated words. As an example:
+    If a word or series of words which make up a phrase are marked as "Insertion" errors, check to see if 
+    it comes before another instance of itself (regardless of whether it's marked as "Insertion" errors or 
+    not). If it does, it should be removed.
+      Examples, showing only insertion errors in parentheses next to repeated or added words:
+        Input: It was (Insertion) was a cold day.
+        Result: It was a cold day.
+        Reasoning: In this case, the first "was" is an insertion error and preceded another instance of itself
 
-    Final Words: {final_words_example_str} 
-    Reference Text: The little green man answered, Of course its me. I've come to see if you're happy. 
-    Result: {words_example_result}
+        Input: The (Insertion) sky (Insertion) was (Insertion) the sky was blue without any (Insertion) clouds
+        Result: The sky was blue without any clouds
+        Reasoning: In this case, the words "The", "sky" and "was" are labeled as Insertion errors and as a phrase 
+        (the sky was) directly precedes another instance of itself. "Any" is labeled as an Insertion error, but
+        it does not precede itself so this is probably an added word by the reader so is not removed.
 
-    If there are other insertion errors, you must use your judgement to determine if these are added or repeated words.
-    
-    Final Words: {final_words}
-    
-    Reference Text: {reference_text}
-    
-    Only return a list of the final words, using the Result example above as reference. Do not add any additional text or commentary or characters to the result.
+    The words in the JSON list will have other properties (such as AccuracyScore), which should be retained in the output.
+
+    Here is the JSON list: {words}
+
+    Please provide the cleaned JSON list.
     """
 
     #response = client.chat.completions.create(
@@ -153,10 +142,3 @@ def sanitize_words_sdk(final_words = str, reference_text = str):
     cleaned_text_json = json.loads(cleaned_text)
 
     return cleaned_text_json
-
-# Example usage
-#final_words = "the little green man the little green man"
-#reference_text = "the little green"
-
-#cleaned_text = sanitize_words(final_words, reference_text)
-#print(cleaned_text)
