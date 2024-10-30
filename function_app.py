@@ -54,7 +54,7 @@ def pronunciation_assessment_trigger():
     words_json = final_words_serializer(words_json)
 
     # get the updated words JSON with repeated words removed using Azure OpenAI
-    words_json =  sanitize_words(words_json, reference_text)
+    words_json =  sanitize_words(words_json)
 
     # replace the Words node from the original result
     result['NBest'][0]['Words'] = words_json

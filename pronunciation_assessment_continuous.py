@@ -138,7 +138,7 @@ def pronunciation_assessment_continuous_from_file(file_name=str, reference_text=
         final_words = recognized_words
 
     final_words = final_words_serializer(final_words)
-    sanitized_words_list = sanitize_words_sdk(final_words, reference_text)
+    sanitized_words_list = sanitize_words_sdk(final_words)
     
     # We can calculate whole accuracy by averaging
     final_accuracy_scores = []
